@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback — Maybelline</title>
+  <link rel="stylesheet" href="Style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <a href="https://github.com/Thando-Gu/fbda25-016.git"  target="_blank" rel="noopener"> view source on github </a>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">MAYBELLINE</div>
+    <ul class="nav-menu">
+      <li><a href="Index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="Maybelline Makeup Products.html">Products</a></li>
+      <li><a href="Feedback page.html">Feedback</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="cart-icon"><i class="fas fa-shopping-bag"></i></div>
+  </nav>
+
+  <div class="subpage-header">
+    <h1>Customer Feedback</h1>
+    <p>Share your experience with Maybelline Beauty </p>
+  </div>
+
+  <div class="feedback-page-wrapper">
+
+    <div class="existing-reviews" id="existingReviews">
+      <h2 class="reviews-heading">What Our Customers Say </h2>
+      <div class="reviews-grid" id="reviewsGrid"></div>
+    </div>
+
+    <div class="feedback-wrapper">
+      <form class="feedback-form" id="feedbackForm">
+
+        <h2 class="feedback-title">Leave Your Review </h2>
+
+        <div class="feedback-group">
+          <label class="feedback-label">Full Name</label>
+          <input class="feedback-input" type="text" id="reviewName" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="feedback-group">
+          <label class="feedback-label">Email Address</label>
+          <input class="feedback-input" type="email" placeholder="Enter your email" required>
+        </div>
+
+        <div class="feedback-group">
+          <label class="feedback-label">How would you rate us?</label>
+          <div class="star-rating" id="starRating">
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="5">★</span>
+          </div>
+          <p class="star-label" id="starLabel">Click to rate</p>
+        </div>
+
+        <div class="feedback-group">
+          <label class="feedback-label">Your Review</label>
+          <textarea class="feedback-input feedback-textarea" id="reviewText" rows="4" placeholder="Tell us what you think about our products..." required></textarea>
+        </div>
+
+        <button type="submit" class="feedback-submit-btn">Submit Review </button>
+
+        <div class="feedback-success" id="successMsg">
+          ✅ Thank you for your review! It means the world to us 
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <footer><p>&copy; Maybelline Beauty 2026</p></footer>
+
+  <script>
+    const starLabels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Amazing!'];
+    let selectedRating = 0;
+
+    const stars = document.querySelectorAll('.star');
+    const starLabel = document.getElementById('starLabel');
+
+    stars.forEach(star => {
+      star.addEventListener('mouseover', () => {
+        const val = parseInt(star.dataset.value);
+        stars.forEach(s => s.style.color = parseInt(s.dataset.value) <= val ? '#ffb347' : '#ddd');
+        starLabel.textContent = starLabels[val];
+      });
+
+      star.addEventListener('mouseleave', () => {
+        stars.forEach(s => s.style.color = parseInt(s.dataset.value) <= selectedRating ? '#ffb347' : '#ddd');
+        starLabel.textContent = selectedRating ? starLabels[selectedRating] : 'Click to rate';
+      });
+
+      star.addEventListener('click', () => {
+        selectedRating = parseInt(star.dataset.value);
+        stars.forEach(s => {
+          s.style.color = parseInt(s.dataset.value) <= selectedRating ? '#ffb347' : '#ddd';
+          s.classList.toggle('selected', parseInt(s.dataset.value) <= selectedRating);
+        });
+        starLabel.textContent = starLabels[selectedRating];
+      });
+    });
+
+    const defaultReviews = [
+      { name: "Sophia M.", stars: 5, text: "Absolutely obsessed! The foundation gives me the perfect glow." },
+      { name: "Olivia R.", stars: 5, text: "Best mascara EVER. No clumps, all volume!" },
+      { name: "Isabella K.", stars: 4, text: "Long-lasting lipstick, survives my coffee and lunch!" },
+      { name: "Mia T.", stars: 5, text: "My entire makeup bag is Maybelline now!" }
+    ];
+
+    function renderReviews(reviews) {
+      const grid = document.getElementById('reviewsGrid');
+      grid.innerHTML = '';
+      reviews.forEach(r => {
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+          starsHtml += `<span style="color:${i <= r.stars ? '#ffb347' : '#ddd'}; font-size:1.2rem;">★</span>`;
+        }
+        grid.innerHTML += `
+          <div class="review-card-page">
+            <div class="review-stars">${starsHtml}</div>
+            <p class="review-text-page">"${r.text}"</p>
+            <div class="review-name">— ${r.name}</div>
+          </div>
+        `;
+      });
+    }
+
+    let allReviews = [...defaultReviews];
+    renderReviews(allReviews);
+
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('reviewName').value;
+      const text = document.getElementById('reviewText').value;
+      if (!selectedRating) { alert('Please select a star rating!'); return; }
+      allReviews.unshift({ name, stars: selectedRating, text });
+      renderReviews(allReviews);
+      document.getElementById('successMsg').style.display = 'block';
+      this.reset();
+      selectedRating = 0;
+      stars.forEach(s => s.style.color = '#ddd');
+      starLabel.textContent = 'Click to rate';
+      setTimeout(() => document.getElementById('successMsg').style.display = 'none', 4000);
+    });
+  </script>
+
+</body>
+</html>
